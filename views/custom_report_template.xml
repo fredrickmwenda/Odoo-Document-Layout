@@ -1,0 +1,60 @@
+<odoo>
+    <template id="custom_external_layout" inherit_id="web.external_layout_standard">
+        <!-- Customizing the header -->
+        <xpath expr="//div[@class='header']" position="replace">
+            <div t-attf-class="header o_company_#{company.id}_layout" t-att-style="report_header_style">
+                <div class="row">
+                    <!-- Left side with company details -->
+                    <div class="col-4">
+                        <h3 t-field="company.name" style="margin-bottom: 0; font-size: 18px; font-weight: bold;"/>
+                        <p t-if="company.report_header" t-field="company.report_header" style="margin: 0; font-size: 14px; font-style: italic;"/>
+                        <p t-field="company.partner_id.contact_address" style="margin: 0;"/>
+                        <p>
+                            <span>Email: </span><span t-field="company.email" style="margin-right: 10px;"/> 
+                            <span t-field="company.website"/>
+                        </p>
+                        <p>Tel: <span t-field="company.phone"/></p>
+                        <p>EQUITY BANK A/C EPZ ATHI RIVER BRANCH</p>
+                        <p>PAY BILL: 247247 Acc No: 1490275129921</p>
+                        <p>PIN: P051670455G</p>
+                        <p>VAT: P051670455G</p>
+                    </div>
+                    
+                    <!-- Center with static image -->
+                    <div class="col-4 text-center">
+                        <img src="/doc_layout/static/src/img/Award.png" style="max-width: 50px; max-height: 50px;" alt="Middle Image"/>
+                    </div>
+                    
+                    <!-- Right side with report title and date -->
+                    <div class="col-4 text-end">
+                        <!-- Dynamically change the title based on the report type -->
+                        <h2>
+                            <t t-if="doc._name == 'sale.order'">Sales Quotation</t>
+                            <t t-if="doc._name == 'account.move' and doc.move_type == 'out_invoice'">Sales Invoice</t>
+                            <t t-if="doc._name == 'account.move' and doc.move_type == 'out_refund'">Credit Note</t>
+                            <!-- Add other conditions if necessary -->
+                        </h2>
+                        <p t-esc="format_date(date.today())" style="font-size: 12px;"/>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+
+
+
+    <!-- Override the Invoice report to use the custom layout -->
+    <template id="report_invoice_document" inherit_id="account.report_invoice_document">
+        <xpath expr="//t[@t-call='web.external_layout_standard']" position="attributes">
+            <attribute name="t-call">doc_layout.custom_external_layout</attribute>
+        </xpath>
+    </template>
+
+    <!-- Override the Quotation report to use the custom layout -->
+    <template id="report_saleorder_document" inherit_id="sale.report_saleorder_document">
+        <xpath expr="//t[@t-call='web.external_layout_standard']" position="attributes">
+            <attribute name="t-call">doc_layout.custom_external_layout</attribute>
+        </xpath>
+    </template>
+</odoo>
